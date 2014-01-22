@@ -1,0 +1,16 @@
+<%= labelled_fields_for :issue, @issue do |f| %>
+        <% if @issue.safe_attribute? 'parent_issue_id' %>
+            <p id="parent_issue"><%= f.text_field :parent_issue_id, :size => 10, :required => @issue.required_attribute?('parent_issue_id') %></p>
+            <%= javascript_tag "observeAutocompleteField('issue_parent_issue_id', '#{escape_javascript auto_complete_issues_path}')" %>
+        <% end %>
+
+        <% if @issue.safe_attribute? 'estimated_hours' %>
+            <p><%= f.text_field :estimated_hours, :size => 3, :disabled => !@issue.leaf?, :required => @issue.required_attribute?('estimated_hours') %> <%= l(:field_hours) %></p>
+        <% end %>
+
+        <% if @issue.safe_attribute?('done_ratio') && @issue.leaf? && Issue.use_field_for_done_ratio? %>
+            <p><%= f.select :done_ratio, ((0..10).to_a.collect {|r| ["#{r*10} %", r*10] }), :required => @issue.required_attribute?('done_ratio') %></p>
+        <% end %>
+<% end %>
+
+<% include_calendar_headers_tags %>
