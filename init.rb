@@ -1,3 +1,6 @@
+require 'redmine'
+require_dependency 'iepc_my_controller_patch'
+
 Redmine::Plugin.register :iepc do
   name 'Iepcjalisco plugin'
   author 'iZam b. <ismael.barragan@iepcjalisco.org.mx>'
