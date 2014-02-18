@@ -12,6 +12,7 @@
     <div class="splitcontent">
         <div class="splitcontentleft">
           <% if @issue.safe_attribute?('fixed_version_id') && @issue.assignable_versions.any? %>
+<<<<<<< Updated upstream
               <p class="attributes"><%= f.select :fixed_version_id, version_options_for_select(@issue.assignable_versions, @issue.fixed_version), :include_blank => true, :required => @issue.required_attribute?('fixed_version_id') %>
                 <%= link_to(image_tag('add.png', :style => 'vertical-align: middle;'),
                             new_project_version_path(@issue.project),
@@ -19,6 +20,16 @@
                             :method => 'get',
                             :title => l(:label_version_new),
                             :tabindex => 200) if User.current.allowed_to?(:manage_versions, @issue.project) %>
+=======
+>>>>>>> Stashed changes
+              <p class="attributes">
+                  <%= f.select :fixed_version_id, version_options_for_select(@issue.assignable_versions, @issue.fixed_version), :include_blank => false, :required => @issue.required_attribute?('fixed_version_id') %>
+                  <%= link_to(image_tag('add.png', :style => 'vertical-align: middle;'),
+                              new_project_version_path(@issue.project),
+                              :remote => true,
+                              :method => 'get',
+                              :title => l(:label_version_new),
+                              :tabindex => 200) if User.current.allowed_to?(:manage_versions, @issue.project) %>
               </p>
           <% end %>
 
@@ -127,13 +138,35 @@
               <%= calendar_for('issue_start_date') if @issue.leaf? %>
             </p>
         <% end %>
+<<<<<<< Updated upstream
+=======
 
+>>>>>>> Stashed changes
+        <% custom_field_values.each do |value| %>
+            <% if value.custom_field.name == "Hora de Inicio" %>
+                <p class="attributes">
+                  <%= custom_field_tag_with_label :issue, value, :required => @issue.required_attribute?(value.custom_field_id) %>
+                </p>
+            <% end %>
+        <% end %>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
         <% if @issue.safe_attribute? 'due_date' %>
             <p id="due_date_area">
               <%= f.text_field(:due_date, :size => 10, :disabled => !@issue.leaf?,
                                :required => @issue.required_attribute?('due_date')) %>
               <%= calendar_for('issue_due_date') if @issue.leaf? %>
             </p>
+        <% end %>
+
+        <% custom_field_values.each do |value| %>
+            <% if value.custom_field.name == "Hora de Término" %>
+                <p class="attributes">
+                  <%= custom_field_tag_with_label :issue, value, :required => @issue.required_attribute?(value.custom_field_id) %>
+                </p>
+            <% end %>
         <% end %>
 
         <% custom_field_values.each do |value| %>
@@ -154,6 +187,17 @@
       </div>
       <div class="splitcontentright">
         <% custom_field_values.each do |value| %>
+            <% if value.custom_field.name == "Lugar" %>
+                <p class="attributes">
+                  <%= custom_field_tag_with_label :issue, value, :required => @issue.required_attribute?(value.custom_field_id) %>
+                </p>
+            <% end %>
+        <% end %>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
+        <% custom_field_values.each do |value| %>
             <% if value.custom_field.name == "Costo" %>
                 <p class="attributes">
                   <%= custom_field_tag_with_label :issue, value, :required => @issue.required_attribute?(value.custom_field_id) %>
@@ -167,6 +211,35 @@
                 </p>
             <% end %>
         <% end %>
+
+        <% custom_field_values.each do |value| %>
+            <% if value.custom_field.name == "Elaboró" %>
+                <p class="attributes">
+                  <%= custom_field_tag_with_label :issue, value, :required => @issue.required_attribute?(value.custom_field_id) %>
+                </p>
+            <% end %>
+        <% end %>
+
+        <% custom_field_values.each do |value| %>
+            <% if value.custom_field.name == "Fecha de Elaboración" %>
+                <p class="attributes">
+                  <%= custom_field_tag_with_label :issue, value, :required => @issue.required_attribute?(value.custom_field_id) %>
+                </p>
+            <% end %>
+        <% end %>
+
+        <% custom_field_values.each do |value| %>
+            <% if value.custom_field.name == "Fecha de Revisión" %>
+                <p class="attributes">
+                  <%= custom_field_tag_with_label :issue, value, :required => @issue.required_attribute?(value.custom_field_id) %>
+                </p>
+            <% end %>
+        <% end %>
+<<<<<<< Updated upstream
+ 
+=======
+
+>>>>>>> Stashed changes
         <div id="attributes" class="attributes">
           <%= render :partial => 'issues/attributes' %>
         </div>
