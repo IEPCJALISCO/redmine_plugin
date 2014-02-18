@@ -10,77 +10,67 @@
     <% end %>
 
     <div class="splitcontent">
-        <div class="splitcontentleft">
-          <% if @issue.safe_attribute?('fixed_version_id') && @issue.assignable_versions.any? %>
-<<<<<<< Updated upstream
-              <p class="attributes"><%= f.select :fixed_version_id, version_options_for_select(@issue.assignable_versions, @issue.fixed_version), :include_blank => true, :required => @issue.required_attribute?('fixed_version_id') %>
-                <%= link_to(image_tag('add.png', :style => 'vertical-align: middle;'),
-                            new_project_version_path(@issue.project),
-                            :remote => true,
-                            :method => 'get',
-                            :title => l(:label_version_new),
-                            :tabindex => 200) if User.current.allowed_to?(:manage_versions, @issue.project) %>
-=======
->>>>>>> Stashed changes
-              <p class="attributes">
-                  <%= f.select :fixed_version_id, version_options_for_select(@issue.assignable_versions, @issue.fixed_version), :include_blank => false, :required => @issue.required_attribute?('fixed_version_id') %>
-                  <%= link_to(image_tag('add.png', :style => 'vertical-align: middle;'),
-                              new_project_version_path(@issue.project),
-                              :remote => true,
-                              :method => 'get',
-                              :title => l(:label_version_new),
-                              :tabindex => 200) if User.current.allowed_to?(:manage_versions, @issue.project) %>
-              </p>
-          <% end %>
+      <div class="splitcontentleft">
+        <% if @issue.safe_attribute?('fixed_version_id') && @issue.assignable_versions.any? %>
+            <p class="attributes">
+              <%= f.select :fixed_version_id, version_options_for_select(@issue.assignable_versions, @issue.fixed_version), :include_blank => false, :required => @issue.required_attribute?('fixed_version_id') %>
+              <%= link_to(image_tag('add.png', :style => 'vertical-align: middle;'),
+                          new_project_version_path(@issue.project),
+                          :remote => true,
+                          :method => 'get',
+                          :title => l(:label_version_new),
+                          :tabindex => 200) if User.current.allowed_to?(:manage_versions, @issue.project) %>
+            </p>
+        <% end %>
 
-          <% if @issue.safe_attribute? 'tracker_id' %>
-              <p class="attributes"><%= f.select :tracker_id, @issue.project.trackers.collect {|t| [t.name, t.id]}, {:required => true},
-                              :onchange => "updateIssueFrom('#{escape_javascript project_issue_form_path(@project, :id => @issue, :format => 'js')}')" %></p>
-          <% end %>
+        <% if @issue.safe_attribute? 'tracker_id' %>
+            <p class="attributes"><%= f.select :tracker_id, @issue.project.trackers.collect {|t| [t.name, t.id]}, {:required => true},
+                                               :onchange => "updateIssueFrom('#{escape_javascript project_issue_form_path(@project, :id => @issue, :format => 'js')}')" %></p>
+        <% end %>
 
-          <% if @issue.safe_attribute? 'assigned_to_id' %>
-              <p class="attributes"><%= f.select :assigned_to_id, principals_options_for_select(@issue.assignable_users, @issue.assigned_to), :include_blank => true, :required => @issue.required_attribute?('assigned_to_id') %></p>
-          <% end %>
+        <% if @issue.safe_attribute? 'assigned_to_id' %>
+            <p class="attributes"><%= f.select :assigned_to_id, principals_options_for_select(@issue.assignable_users, @issue.assigned_to), :include_blank => true, :required => @issue.required_attribute?('assigned_to_id') %></p>
+        <% end %>
 
-          <% if @issue.safe_attribute?('status_id') && @allowed_statuses.present? %>
-              <p class="attributes"><%= f.select :status_id, (@allowed_statuses.collect {|p| [p.name, p.id]}), {:required => true},
-                              :onchange => "updateIssueFrom('#{escape_javascript project_issue_form_path(@project, :id => @issue, :format => 'js')}')" %></p>
+        <% if @issue.safe_attribute?('status_id') && @allowed_statuses.present? %>
+            <p class="attributes"><%= f.select :status_id, (@allowed_statuses.collect {|p| [p.name, p.id]}), {:required => true},
+                                               :onchange => "updateIssueFrom('#{escape_javascript project_issue_form_path(@project, :id => @issue, :format => 'js')}')" %></p>
 
-          <% else %>
-              <p class="attributes"><label><%= l(:field_status) %></label> <%= h(@issue.status.name) %></p>
-          <% end %>
+        <% else %>
+            <p class="attributes"><label><%= l(:field_status) %></label> <%= h(@issue.status.name) %></p>
+        <% end %>
 
 
-        </div>
-        <div class="splitcontentright">
-          <% if @issue.safe_attribute? 'priority_id' %>
-              <p class="attributes"><%= f.select :priority_id, (@priorities.collect {|p| [p.name, p.id]}), {:required => true}, :disabled => !@issue.leaf? %></p>
-          <% end %>
-            <% custom_field_values.each do |value| %>
-                <% if value.custom_field.name == "Eje toral" %>
-                    <p class="attributes">
-                        <%= custom_field_tag_with_label :issue, value, :required => @issue.required_attribute?(value.custom_field_id) %>
-                    </p>
-                <% end %>
+      </div>
+      <div class="splitcontentright">
+        <% if @issue.safe_attribute? 'priority_id' %>
+            <p class="attributes"><%= f.select :priority_id, (@priorities.collect {|p| [p.name, p.id]}), {:required => true}, :disabled => !@issue.leaf? %></p>
+        <% end %>
+        <% custom_field_values.each do |value| %>
+            <% if value.custom_field.name == "Eje toral" %>
+                <p class="attributes">
+                  <%= custom_field_tag_with_label :issue, value, :required => @issue.required_attribute?(value.custom_field_id) %>
+                </p>
             <% end %>
-          <% custom_field_values.each do |value| %>
-              <% if value.custom_field.name == "Inciso" %>
-                  <p class="attributes">
-                    <%= custom_field_tag_with_label :issue, value, :required => @issue.required_attribute?(value.custom_field_id) %>
-                  </p>
-              <% end %>
-          <% end %>
+        <% end %>
+        <% custom_field_values.each do |value| %>
+            <% if value.custom_field.name == "Inciso" %>
+                <p class="attributes">
+                  <%= custom_field_tag_with_label :issue, value, :required => @issue.required_attribute?(value.custom_field_id) %>
+                </p>
+            <% end %>
+        <% end %>
 
-          <% if @issue.safe_attribute?('category_id') && @issue.project.issue_categories.any? %>
-              <p><%= f.select :category_id, (@issue.project.issue_categories.collect {|c| [c.name, c.id]}), :include_blank => true, :required => @issue.required_attribute?('category_id') %>
-                <%= link_to(image_tag('add.png', :style => 'vertical-align: middle;'),
-                            new_project_issue_category_path(@issue.project),
-                            :remote => true,
-                            :method => 'get',
-                            :title => l(:label_issue_category_new),
-                            :tabindex => 200) if User.current.allowed_to?(:manage_categories, @issue.project) %></p>
-          <% end %>
-        </div>
+        <% if @issue.safe_attribute?('category_id') && @issue.project.issue_categories.any? %>
+            <p><%= f.select :category_id, (@issue.project.issue_categories.collect {|c| [c.name, c.id]}), :include_blank => true, :required => @issue.required_attribute?('category_id') %>
+              <%= link_to(image_tag('add.png', :style => 'vertical-align: middle;'),
+                          new_project_issue_category_path(@issue.project),
+                          :remote => true,
+                          :method => 'get',
+                          :title => l(:label_issue_category_new),
+                          :tabindex => 200) if User.current.allowed_to?(:manage_categories, @issue.project) %></p>
+        <% end %>
+      </div>
     </div>
 
 
@@ -105,12 +95,12 @@
           <%= f.label_for_field :description, :required => @issue.required_attribute?('description') %>
           <%= link_to_function image_tag('edit.png'), '$(this).hide(); $("#issue_description_and_toolbar").show()' unless @issue.new_record? %>
           <%= content_tag 'span', :id => "issue_description_and_toolbar", :style => (@issue.new_record? ? nil : 'display:none') do %>
-            <%= f.text_area :description,
-                           :cols => 60,
-                           :rows => (@issue.description.blank? ? 10 : [[10, @issue.description.length / 50].max, 100].min),
-                           :accesskey => accesskey(:edit),
-                           :class => 'wiki-edit',
-                           :no_label => true %>
+              <%= f.text_area :description,
+                              :cols => 60,
+                              :rows => (@issue.description.blank? ? 10 : [[10, @issue.description.length / 50].max, 100].min),
+                              :accesskey => accesskey(:edit),
+                              :class => 'wiki-edit',
+                              :no_label => true %>
           <% end %>
         </p>
         <%= wikitoolbar_for 'issue_description' %>
@@ -138,10 +128,7 @@
               <%= calendar_for('issue_start_date') if @issue.leaf? %>
             </p>
         <% end %>
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
         <% custom_field_values.each do |value| %>
             <% if value.custom_field.name == "Hora de Inicio" %>
                 <p class="attributes">
@@ -149,10 +136,7 @@
                 </p>
             <% end %>
         <% end %>
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
         <% if @issue.safe_attribute? 'due_date' %>
             <p id="due_date_area">
               <%= f.text_field(:due_date, :size => 10, :disabled => !@issue.leaf?,
@@ -193,10 +177,7 @@
                 </p>
             <% end %>
         <% end %>
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
         <% custom_field_values.each do |value| %>
             <% if value.custom_field.name == "Costo" %>
                 <p class="attributes">
@@ -235,11 +216,7 @@
                 </p>
             <% end %>
         <% end %>
-<<<<<<< Updated upstream
- 
-=======
 
->>>>>>> Stashed changes
         <div id="attributes" class="attributes">
           <%= render :partial => 'issues/attributes' %>
         </div>
