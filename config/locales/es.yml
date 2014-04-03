@@ -1,3 +1,7 @@
 # English strings go here for Rails i18n
 es:
   reports: "Reportes"
+  project_module_reports: "Reportes"
+  permission_view_reports: "Ver reportes"
+  permission_reports_activity: "Reporte de actividades semanales"
+  permission_reports_calendar: "Calendario de actividades"

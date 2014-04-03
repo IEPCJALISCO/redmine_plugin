@@ -1,0 +1,57 @@
+<h2><%= link_to 'Reportes', reportes_path %>: Actividades semanales</h2>
+
+<hr>
+<label><strong>Del</strong> <input id="fechaReporteDel" type="date" value="<%= @date_from %>"></label>
+<label> <strong>al</strong> <input id="fechaReporteAl" type="date" value="<%= @date_to %>"></label>
+
+<select id="projects">
+  <% @allprojects.each do |project| %>
+      <option <%= 'selected' if project.identifier == @direccion %> value="<%= project.identifier %>"><%= project %></option>
+  <% end %>
+</select>
+
+<button type="button" id="botonVerReporte">Ver</button>
+<hr>
+
+<h2><%= @author.nil? ? l(:label_activity) : l(:label_user_activity, link_to_user(@author)).html_safe %></h2>
+
+<p class="subtitle"><%= l(:label_date_from_to, :start => format_date(@date_from ), :end => format_date(@date_to)) %></p>
+
+<div id="activity">
+  <% @events_by_day.each do |key, day| %>
+      <% if key %>
+          <h3><%= @allprojects[key-1] %></h3>
+          <table cellspacing="0">
+            <% day.each do |e| -%>
+                <tr>
+                  <td><%= e.done_ratio %>%</td>
+                  <td>[<%= link_to e.id, e.event_url %>] </td>
+                  <td><%= link_to format_report_activity_title(e.event_title), e.event_url %></td>
+                </tr>
+            <% end -%>
+          </table>
+      <% end %>
+  <% end -%>
+</div>
+
+<% content_for :header_tags do %>
+    <%= auto_discovery_link_tag(:atom, params.merge(:format => 'atom', :from => nil, :key => User.current.rss_key)) %>
+<% end %>
+
+<% content_for :sidebar do %>
+
+<% end %>
+
+<% html_title(l(:label_activity), @author) -%>
+
+<script>
+  $(function(){
+    $("#botonVerReporte").click(function(){
+        var fechaDel = $("#fechaReporteDel").val(),
+            fechaAl  = $("#fechaReporteAl").val(),
+            project  = $("#projects").val();
+
+        window.location.pathname = "reports/" + fechaDel + "/" + fechaAl + "/" + project + "/activity";
+    });
+  });
+</script>

@@ -1,0 +1,75 @@
+<h2><%= link_to 'Reportes', reportes_path %>: Agenda de actividades</h2>
+
+<hr>
+<label><strong>Del</strong> <input id="fechaReporteDel" type="date" value="<%= @date_from %>"></label>
+<label> <strong>al</strong> <input id="fechaReporteAl" type="date" value="<%= @date_to %>"></label>
+
+<select id="projects">
+  <% @allprojects.each do |project| %>
+      <option <%= 'selected' if project.id == @direccion.id %> value="<%= project.identifier %>"><%= project %></option>
+  <% end %>
+</select>
+
+<button type="button" id="botonVerReporte">Ver</button>
+<hr>
+
+<h2><%= @author.nil? ? l(:label_activity) : l(:label_user_activity, link_to_user(@author)).html_safe %></h2>
+
+<p class="subtitle"><%= l(:label_date_from_to, :start => format_date(@date_from ), :end => format_date(@date_to)) %></p>
+
+<div id="activity">
+  <% @issues.each do |key, day| %>
+      <% if key %>
+          <h3><%= @allprojects[key-1] %></h3>
+          <table cellspacing="0">
+            <% day.each do |e| -%>
+                <tr>
+                  <td><%= e.done_ratio %>%</td>
+                  <td>[<%= link_to e.id, e.event_url %>] </td>
+                  <td><strong><%= e.start_date %></strong></td>
+                  <td><%= link_to format_report_activity_title(e.event_title), e.event_url %></td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    &nbsp;
+                  </td>
+                  <td colspan="2">
+                    <%= e.description %>
+                  </td>
+                </tr>
+            <% end -%>
+          </table>
+          <hr>
+      <% end %>
+  <% end -%>
+</div>
+<div style="text-align: center;">
+  <button id="descargarenexcel" type="button">Descargar en excel</button>
+</div>
+<br>
+
+<% content_for :header_tags do %>
+    <%= auto_discovery_link_tag(:atom, params.merge(:format => 'atom', :from => nil, :key => User.current.rss_key)) %>
+<% end %>
+
+<% content_for :sidebar do %>
+
+<% end %>
+
+<% html_title(l(:label_activity), @author) -%>
+
+<script>
+    $(function(){
+        $("#botonVerReporte").click(function(){
+            var fechaDel = $("#fechaReporteDel").val(),
+                    fechaAl  = $("#fechaReporteAl").val(),
+                    project  = $("#projects").val();
+
+            window.location.pathname = "reports/calendar/" + fechaDel + "/" + fechaAl + "/" + project;
+        });
+
+        $("#descargarenexcel").click(function(){
+            window.location.pathname = window.location.pathname + "/excel";
+        });
+    });
+</script>

@@ -6,6 +6,7 @@
     <th><%=l(:field_project)%></th>
     <th><%=l(:field_tracker)%></th>
     <th><%=l(:field_subject)%></th>
+    <th><%=l(:field_done_ratio)%></th>
     </tr></thead>
     <tbody>
     <% for issue in issues %>
@@ -19,6 +20,7 @@
       <td class="subject">
         <%= link_to truncate(issue.subject, :length => 60), issue_path(issue) %> (<%=h issue.status %>)
       </td>
+      <td><%= issue.done_ratio %>%</td>
     </tr>
     <% end %>
     </tbody>
