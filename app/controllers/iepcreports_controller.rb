@@ -44,7 +44,7 @@ class IepcreportsController < ApplicationController
     render_404
   end
 
-  def calendar
+  def outdatedCalendar
     @allprojects = Project.all
 
     projects_by_id = {
@@ -130,6 +130,57 @@ class IepcreportsController < ApplicationController
         p.serialize("#{Rails.root}/tmp/agenda_actividades.xlsx")
       end
       send_file "#{Rails.root}/tmp/agenda_actividades.xlsx", :type => "application/xlsx", :x_sendfile => true
+    end
+
+  rescue ActiveRecord::RecordNotFound
+    render_404
+  end
+
+  def calendar
+    projects_by_id = {
+        1 => -2,   # Programa Operativo Anual
+        2 => -1,   # Secretaría Ejecutiva
+        3 => 0,   # Dirección General
+        4 => 1,   # Administración y finanzas
+        5 => 2,   # Capacitación Electoral
+        6 => 3,   # Informática
+        7 => 4,   # Jurídico
+        8 => 5,   # Organización
+        9 => 12,  # Fiscalización
+        10 => 6,  # Comunicación Social
+        11 => 7,  # Participación ciudadana
+        12 => 8,  # Secretaría Técnica
+        13 => 9,  # Transparencia
+        14 => 10, # Unidad Editorial
+        15 => 11, # Prerrogativas
+        16 => 13, # Contraloría
+        17 => -3, # Presidencia
+        18 => -4  # Consejo General
+    }
+    nextweek         = Date.today.at_end_of_week + 2
+    direccion_param  = params[:id].nil? ? 'direccion-general' : params[:id]
+    @date_from       = params[:del].nil? ? (nextweek.at_beginning_of_week) : (Date.parse params[:del])
+    @date_to          = params[:al].nil? ? (nextweek.at_end_of_week) : (Date.parse params[:al])
+
+    @allprojects = Project.all
+      .delete_if {|project| projects_by_id[project.id] < 0}
+      .sort_by {|project| projects_by_id[project.id]}
+
+    @direccion = Project.find_by_identifier direccion_param
+    @direcciones = [@direccion]
+    @direccion.children.each do |subdireccion|
+      @direcciones.push subdireccion
+    end
+    @direcciones.sort_by {|project| projects_by_id[project.id]}
+
+    @direcciones_y_tareas = {}
+
+    @direcciones.each do |project|
+      @direcciones_y_tareas[project] = Issue.open
+        .where('project_id = ?', project.id)
+        .where('parent_id IS NULL')
+        .where('(start_date <= ? and done_ratio < 100) or (start_date <= ? and start_date >= ?)', @date_to, @date_to, @date_from)
+        .order('start_date DESC')
     end
 
   rescue ActiveRecord::RecordNotFound

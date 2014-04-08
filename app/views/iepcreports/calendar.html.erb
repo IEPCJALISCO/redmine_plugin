@@ -1,5 +1,44 @@
 <h2><%= link_to 'Reportes', reportes_path %>: Agenda de actividades</h2>
 
+<style>
+  #calendarReport li.issue {
+      border-bottom: 1px solid #dddddd;
+  }
+  #calendarReport li.issue .done_ratio{
+      margin-right: 1em;
+  }
+  #calendarReport li.issue .link {
+      display: inline-block;
+      min-width: 4em;
+      text-align: center;
+  }
+  #calendarReport li.issue strong {
+      margin: 0 1em;
+  }
+  #calendarReport div.description {
+      padding: 0.2em 0.5em;
+  }
+
+  ul ul {
+      display: none;
+  }
+  ul.expanded {
+      display: block;
+  }
+  li.expansible {
+      cursor: pointer;
+  }
+  li.expansible .link, li.expansible .done_ratio {
+      font-weight: bold;
+  }
+  li.expansible strong {
+      text-decoration: underline;
+  }
+  #statusbar button{
+      float: right;
+  }
+</style>
+
 <hr>
 <label><strong>Del</strong> <input id="fechaReporteDel" type="date" value="<%= @date_from %>"></label>
 <label> <strong>al</strong> <input id="fechaReporteAl" type="date" value="<%= @date_to %>"></label>
@@ -13,38 +52,24 @@
 <button type="button" id="botonVerReporte">Ver</button>
 <hr>
 
-<h2><%= @author.nil? ? l(:label_activity) : l(:label_user_activity, link_to_user(@author)).html_safe %></h2>
+<fieldset id="statusbar">
+  <button type="button" id="botonExpandir" title="Expandir">+++</button>
+  <button type="button" id="botonColapsar" title="Colapsar">---</button>
+  <b>AP</b>: Actividad programada, <b>AI</b>: Actividad institucional, <b>A</b>: Actividad, <b>T</b>: Tarea, <b>E</b>: Evento
+</fieldset>
+
+<h2><%= l(:label_activity) %></h2>
 
 <p class="subtitle"><%= l(:label_date_from_to, :start => format_date(@date_from ), :end => format_date(@date_to)) %></p>
 
-<div id="activity">
-  <% @issues.each do |key, day| %>
-      <% if key %>
-          <h3><%= @allprojects[key-1] %></h3>
-          <table cellspacing="0">
-            <% day.each do |e| -%>
-                <tr>
-                  <td><%= e.done_ratio %>%</td>
-                  <td>[<%= link_to e.id, e.event_url %>] </td>
-                  <td><strong><%= e.start_date %></strong></td>
-                  <td><%= link_to format_report_activity_title(e.event_title), e.event_url %></td>
-                </tr>
-                <tr>
-                  <td colspan="2">
-                    &nbsp;
-                  </td>
-                  <td colspan="2">
-                    <%= e.description %>
-                  </td>
-                </tr>
-            <% end -%>
-          </table>
-          <hr>
-      <% end %>
-  <% end -%>
+<div id="calendarReport">
+  <% @direcciones_y_tareas.each do |direccion, issues| %>
+    <h3><%= direccion %></h3>
+    <%= raw(print_issues_report(issues, @date_from, @date_to)) %>
+  <% end %>
 </div>
 <div style="text-align: center;">
-  <button id="descargarenexcel" type="button">Descargar en excel</button>
+  <!--<button id="descargarenexcel" type="button">Descargar en excel</button>-->
 </div>
 <br>
 
@@ -56,16 +81,39 @@
 
 <% end %>
 
-<% html_title(l(:label_activity), @author) -%>
+<% html_title(l(:label_activity)) -%>
 
 <script>
     $(function(){
+        var $calendarReport = $("#calendarReport");
+
         $("#botonVerReporte").click(function(){
             var fechaDel = $("#fechaReporteDel").val(),
                     fechaAl  = $("#fechaReporteAl").val(),
                     project  = $("#projects").val();
 
             window.location.pathname = "reports/calendar/" + fechaDel + "/" + fechaAl + "/" + project;
+        });
+
+        $calendarReport.find("ul").each(function(index, element) {
+            $(element).prev("li").addClass("expansible");
+        });
+
+        $calendarReport.find("li").click(function(){
+            var $li = $(this);
+
+            if ($(event.target).is("input")) {
+                return;
+            }
+
+            $li.next("ul").toggleClass("expanded");
+        });
+
+        $("#botonExpandir").click(function(){
+            $calendarReport.find("ul").addClass("expanded");
+        });
+        $("#botonColapsar").click(function(){
+            $calendarReport.find("ul").removeClass("expanded");
         });
 
         $("#descargarenexcel").click(function(){
